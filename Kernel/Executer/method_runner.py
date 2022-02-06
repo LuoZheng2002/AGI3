@@ -5,7 +5,7 @@ from Kernel.Struct.system_types import *
 from Kernel.Managers.resource_manager import ResourceManager
 from ExceptionAndDebug.exception import AGIException
 import Kernel.global_resource as gr
-
+from copy import deepcopy
 
 class CodeIterator:
     def __init__(self, method_code):
@@ -181,18 +181,18 @@ def process_line(line, rsc_mng: ResourceManager, scope_info: tuple) -> dict:
         rhs = solve_expression(rhs_expr, rsc_mng)
         # assign rhs to lhs:
         if lhs[1] is None:  # lhs[2] is None too, means that lhs[0] is register object
-            rsc_mng.set_reg_value(reg_id, child_index, rhs)
+            rsc_mng.set_reg_value(reg_id, child_index, deepcopy(rhs))
         else:
             # if lhs[1] == r['at'] or lhs[1] == r['at_reverse'], then lhs[0] must be an AGIList
             # because lhs[0] is the product of calling get_agi_list when target is an AGIObject
             if lhs[1] == r['at']:
-                lhs[0].set_forward(lhs[2], rhs)
+                lhs[0].set_forward(lhs[2], deepcopy(rhs))
             elif lhs[1] == r['at_reverse']:
-                lhs[0].set_reverse(lhs[2], rhs)
+                lhs[0].set_reverse(lhs[2], deepcopy(rhs))
             else:  # lhs[1] == r['get_member']
                 if type(lhs[0]) != AGIObject and type(lhs[0]) != dict:
                     raise AGIException('Can only call "get_member" towards an AGIObject or a dict.')
-                lhs[0][lhs[2]] = rhs
+                lhs[0][lhs[2]] = deepcopy(rhs)
     elif head == r['return']:
         result = solve_expression(line[1], rsc_mng)
         return_value = {'value_type': 'return', 'value': result}
