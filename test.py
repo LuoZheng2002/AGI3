@@ -1,10 +1,10 @@
-from digit_to_number import digit_to_number
+from digit_sum import digit_sum
 from test_methods import *
 import pickle
 
-file = open('Library/Knowledge/Method/Code/' + '3' + '.txt', 'wb')
-pickle.dump(digit_to_number, file)
+file = open('Library/Knowledge/Method/Code/' + '1' + '.txt', 'wb')
+pickle.dump(vertical_add, file)
 file.close()
-file = open('Library/Knowledge/Method/Info/' + '3' + '.txt', 'wb')
-pickle.dump(digit_to_number, file)
+file = open('Library/Knowledge/Method/Info/' + '1' + '.txt', 'wb')
+pickle.dump(vertical_add, file)
 file.close()

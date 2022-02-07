@@ -14,12 +14,10 @@ def equal(params: list) -> bool:
         else:
             return False
     else:
-        assert type(params[0]) == AGIObject
-        if type(params[1]) == AGIObject:
-            if params[0].concept_id == params[1].concept_id:
-                return True
-            else:
-                return False
+        if not (type(params[0]) == AGIObject and type(params[1]) == AGIObject):
+            raise AGIException('Input is neither integer nor AGIObject', special_name='type', special_str=str(type(params[0])))
+        if params[0].concept_id == params[1].concept_id:
+            return True
         else:
             return False
 

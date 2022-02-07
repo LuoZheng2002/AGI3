@@ -40,11 +40,11 @@ class AGIList:
         if len(self.reverse) == index:
             self.reverse.append(value)
         elif len(self.reverse) < index:
-            self.reverse += [[None] * (index - len(self.reverse))]
+            self.reverse += [None for i in range(index - len(self.reverse))]
             self.reverse.append(value)
         else:
             if self.reverse[index] is not None:
-                raise AGIException(19)
+                raise AGIException('Reverse index in AGIList is already occupied.')
             self.reverse[index] = value
         self.update()
 

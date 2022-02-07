@@ -7,6 +7,7 @@ from ExceptionAndDebug.exception import AGIException
 import Kernel.global_resource as gr
 from copy import deepcopy
 
+
 class CodeIterator:
     def __init__(self, method_code):
         self.list_codes = method_code
@@ -35,8 +36,8 @@ def get_agi_list(agi_object: AGIObject) -> AGIList:
 def solve_expression(expr: list,
                      rsc_mng: ResourceManager,
                      ) -> AGIObject or AGIList:
-    if len(expr) == 0:
-        raise AGIException('An expression can\'t be of zero size.')
+    if type(expr) != list or len(expr) == 0:
+        raise AGIException('An expression can\'t be of zero size.', special_name='expr', special_str=str(expr))
     # constexpr:
     if len(expr) == 1:
         return expr[0]
@@ -75,7 +76,7 @@ def solve_expression(expr: list,
         method_params = []
         for i in expr[2]:
             method_params.append(solve_expression(i, rsc_mng))
-        result = run_method(method_id, method_params, rsc_mng)
+        result = run_method(method_id, method_params, rsc_mng.proc_id)
         assert type(result) == AGIObject
         return result
     elif head == r['system_type']:
@@ -255,8 +256,13 @@ def process_line(line, rsc_mng: ResourceManager, scope_info: tuple) -> dict:
         result = solve_expression(if_statement, rsc_mng)
         if result:
             for if_line in if_lines:
-                return_value = process_line(if_line, rsc_mng, scope_info)
-                break
+                if_return_value = process_line(if_line, rsc_mng, scope_info)
+                if if_return_value['value_type'] == 'break':
+                    return_value = {'value_type': 'break', 'value': None}
+                    break
+                elif if_return_value['value_type'] == 'return':
+                    return_value = if_return_value
+                    break
         else:  # if "if" statement fails, else if and else statements have an opportunity to be executed
             executed = False
             for else_if_block in else_if_blocks:
@@ -264,18 +270,28 @@ def process_line(line, rsc_mng: ResourceManager, scope_info: tuple) -> dict:
                 else_if_lines = else_if_block[1]
                 result = solve_expression(else_if_statement, rsc_mng)
                 if result:
+                    executed = True
                     # execute the else_if lines
                     for else_if_line in else_if_lines:
-                        return_value = process_line(else_if_line, rsc_mng, scope_info)
-                        break
+                        elif_return_value = process_line(else_if_line, rsc_mng, scope_info)
+                        if elif_return_value['value_type'] == 'break':
+                            return_value = {'value_type': 'break', 'value': None}
+                            break
+                        elif elif_return_value['value_type'] == 'return':
+                            return_value = elif_return_value
+                            break
                     # this else_if block is executed, meaning that other else_if block should not be executed
-                    executed = True
                     break
             # execute else block
             if not executed:
                 for else_line in else_lines:
-                    return_value = process_line(else_line, rsc_mng, scope_info)
-                    break
+                    else_return_value = process_line(else_line, rsc_mng, scope_info)
+                    if else_return_value['value_type'] == 'break':
+                        return_value = {'value_type': 'break', 'value': None}
+                        break
+                    elif else_return_value['value_type'] == 'return':
+                        return_value = else_return_value
+                        break
     else:
         raise AGIException('Unexpected word at the beginning of a line.')
     return return_value
@@ -285,7 +301,7 @@ def run_method(method_id, input_params: list, caller_id) -> AGIObject or None:
     # process registration
     proc_id = gr.proc_mng.create_process(caller_id, method_id, input_params)
     # local resource manager creation
-    rsc_mng = ResourceManager(input_params)
+    rsc_mng = ResourceManager(input_params, proc_id)
     method_code = gr.kd.get_method_code(method_id)
     # CodeIterator creation
     ci = CodeIterator(method_code)

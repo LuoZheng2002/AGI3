@@ -189,7 +189,7 @@ vertical_add = [
                                 [r['call'], mc['digit to number'],
                                     [
                                         [r['at_reverse'],
-                                            [r['reg'], 2,
+                                            [r['reg'], 3,
                                                 [
                                                     [r['system_call'], sc['offset'],
                                                         [
@@ -216,6 +216,7 @@ vertical_add = [
                         ],
                         # if lines
                         [
+                            [r['assign'], [r['reg'], 3, [[r['iterator'], 0]]], [r['concept_instance'], 2]],
                             [r['assign'],
                                 [r['at_reverse'],
                                     [r['reg'], 3, [[r['iterator'], 0]]],

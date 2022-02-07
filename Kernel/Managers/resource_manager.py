@@ -37,8 +37,9 @@ class Iterator:
 
 
 class ResourceManager:
-    def __init__(self, input_params):
+    def __init__(self, input_params, proc_id):
         self.input_params = input_params
+        self.proc_id = proc_id
         self.registers = []
         self.iterators = []
 
@@ -63,6 +64,7 @@ class ResourceManager:
         for register in self.registers:
             if register.id == reg_id:
                 register.create_child(child_index)
+                return
         raise AGIException('Can\'t find target register')
 
     def create_iterator(self, iter_id):
@@ -95,13 +97,16 @@ class ResourceManager:
         for register in self.registers:
             if register.id == reg_id:
                 register.set_value(child_index, value)
-        raise AGIException('Can\'t find target iterator.')
+                return
+        raise AGIException('Can\'t find target register.')
 
     def get_reg_value(self, reg_id, child_index: tuple):
         for register in self.registers:
             if register.id == reg_id:
                 if child_index not in register.value:
-                    raise AGIException('Register child not found.')
+                    print(self.registers[0].value)
+                    print('child_index: ' + str(child_index))
+                    raise AGIException('Register child not found.', special_name='reg3', special_str=str(self.registers[2].value))
                 if register.value[child_index] is None:
                     raise AGIException('Register child has value None.')
                 return register.value[child_index]
