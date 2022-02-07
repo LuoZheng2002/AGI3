@@ -58,14 +58,31 @@ def solve_expression(expr: list,
     elif head == r['system_call']:
         # format: [system_call, function_id, [expr1, expr2, ...]]
         function_id = expr[1]
-        if function_id == sc['and'] or function_id == sc['or']:
+        params = expr[2]
+        """if function_id == sc['and'] or function_id == sc['or']:
             first_result = solve_expression(expr[2][0], rsc_mng)
             if function_id == sc['and'] and not first_result:
                 return False
             elif function_id == sc['or'] and first_result:
-                return True
+                return True"""
+        if function_id == sc['and']:
+            for param in params:
+                single_result = solve_expression(param, rsc_mng)
+                if type(single_result) != bool:
+                    raise AGIException('Params in and function should be bool.')
+                if not single_result:
+                    return False
+            return True
+        elif function_id == sc['or']:
+            for param in params:
+                single_result = solve_expression(param, rsc_mng)
+                if type(single_result) != bool:
+                    raise AGIException('Params in or function should be bool.')
+                if single_result:
+                    return True
+            return False
         function_params = []
-        for i in expr[2]:
+        for i in params:
             function_params.append(solve_expression(i, rsc_mng))
         result = system_call[function_id](function_params)
         assert result is not None

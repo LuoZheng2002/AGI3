@@ -55,40 +55,38 @@ def less_or_equal(params: list) -> bool:
 
 
 def and_(params: list) -> bool:
-    if len(params) != 2:
-        raise AGIException(15)
-    if type(params[0]) != bool or type(params[1]) != bool:
-        raise AGIException(16)
-    return params[0] and params[1]
+    for param in params:
+        if type(param) != bool:
+            raise AGIException('Parameters in and function should be bool')
+        if not param:
+            return False
+    return True
 
 
 def or_(params: list) -> bool:
-    if len(params) != 2:
-        raise AGIException(15)
-    if type(params[0]) != bool or type(params[1]) != bool:
-        raise AGIException(16)
-    return params[0] or params[1]
+    for param in params:
+        if type(param) != bool:
+            raise AGIException('Parameters in or function should be bool')
+        if param:
+            return True
+    return False
 
 
 def max_(params: list) -> bool:
-    if len(params) != 2:
-        raise AGIException(15)
-    if type(params[0]) != int or type(params[1]) != int:
-        raise AGIException(16)
     max_value = -0x80000000
     for value in params:
+        if type(value) != int:
+            raise AGIException('Params in max function should be int.')
         if value > max_value:
             max_value = value
     return max_value
 
 
 def min_(params: list) -> bool:
-    if len(params) != 2:
-        raise AGIException(15)
-    if type(params[0]) != int or type(params[1]) != int:
-        raise AGIException(16)
     min_value = 0xffffffff
     for value in params:
+        if type(value) != int:
+            raise AGIException('Params in min function should be int.')
         if value < min_value:
             min_value = value
     return min_value
@@ -112,7 +110,8 @@ sc = {
     'or': 7,
     'max': 8,
     'min': 9,
-    'offset': 10
+    'offset': 10,
+    '2DMap': {'add_element': 11, 'add_pos': 12}
 }
 
 system_call = {
@@ -128,4 +127,4 @@ system_call = {
     10: offset  # 'offset'
 }
 
-rsc = {v: k for k, v in sc.items()}
+# rsc = {v: k for k, v in sc.items()}

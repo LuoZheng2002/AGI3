@@ -1,0 +1,41 @@
+The following is how to find the sum of two numbers.
+For example, to find the sum of 1319 and 46, we do the following actions.
+First, write the two numbers in the following format:
+
+1319
+  46
+
+Then you find the sum of 9 and 6.
+If you don't know how to do it,
+you should first learn how to find the sum of two single digit numbers.
+The sum of 9 and 6 is 15, so you write down the two digits like this:
+
+1319
+  46
+  1
+   5
+
+Then you find the sum of 1 and 4, and you get 5.
+Because there is a '1' under 1 and 4, you need to find the sum of 1 and 5, and you get 6.
+Then you write down 6 like this:
+
+1319
+  46
+  1
+  65
+
+Because there's no number under '3', you write down 3 directly like this:
+
+1319
+  46
+  1
+ 365
+
+The same reason applies to '1':
+
+1319
+  46
+  1
+1365
+
+And 1365 is the final result.

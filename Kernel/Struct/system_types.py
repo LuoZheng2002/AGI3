@@ -10,6 +10,6 @@ class TwoDMap:
         # to do
 
 
-st = {1: Array, 2: TwoDMap}
+st = {'Array': 1, '2DMap': 2}
 st_text = {1: 'Array', 2: 'TwoDMap'}
 
